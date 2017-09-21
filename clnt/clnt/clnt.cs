@@ -2,11 +2,15 @@
 using System.Text;
 using System.Net;
 using System.Net.Sockets;
+using DataBase;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace SocketClient
 {
-    class Program
+    class Clnt
     {
+        
         static void Main(string[] args)
         {
             try
@@ -25,8 +29,23 @@ namespace SocketClient
 
         static void SendMessageFromSocket(int port)
         {
-            // Буфер для входящих данных
-            byte[] bytes = new byte[1024];
+
+            var tmp= new Person
+           {
+               FirstName = "123a",
+               LastName = "4124123i"
+           };
+
+            var tmp2 = new Request
+            {
+                PersonId = 2,
+                Time = DateTime.Today,
+                Req = "Vasyaaaa"
+            };
+
+            //сериализация объекта 
+            var bytes = tmp.Serialization();
+            var bytes2 = tmp2.Serialization();
 
             // Соединяемся с удаленным устройством
 
@@ -41,22 +60,24 @@ namespace SocketClient
             sender.Connect(ipEndPoint);
 
             Console.Write("Введите сообщение: ");
-            string message = Console.ReadLine();
+         //   string message = Console.ReadLine();
 
             Console.WriteLine("Сокет соединяется с {0} ", sender.RemoteEndPoint.ToString());
-            byte[] msg = Encoding.UTF8.GetBytes(message);
+            byte[] msg = bytes;
+            byte[] msg2 = bytes2;
+            //Отправляем данные через сокет
+            int bytesSent = sender.Send(msg2);
+            bytesSent = sender.Send(msg2);
 
-            // Отправляем данные через сокет
-            int bytesSent = sender.Send(msg);
 
             // Получаем ответ от сервера
-            int bytesRec = sender.Receive(bytes);
+            //   int bytesRec = sender.Receive(bytes);
 
-            Console.WriteLine("\nОтвет от сервера: {0}\n\n", Encoding.UTF8.GetString(bytes, 0, bytesRec));
+            //    Console.WriteLine("\nОтвет от сервера: {0}\n\n", Encoding.UTF8.GetString(bytes, 0, bytesRec));
 
             // Используем рекурсию для неоднократного вызова SendMessageFromSocket()
-            if (message.IndexOf("<TheEnd>") == -1)
-                SendMessageFromSocket(port);
+            //   if (message.IndexOf("<TheEnd>") == -1)
+            //       SendMessageFromSocket(port);
 
             // Освобождаем сокет
             sender.Shutdown(SocketShutdown.Both);
