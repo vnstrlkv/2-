@@ -11,16 +11,21 @@ using System.Runtime.Serialization.Formatters.Binary;
 using SQLite;
 using System.Globalization;
 namespace DataBase
-{// 0 - person,  1- Request 
+{
+
+
+
     [Serializable]
-    public class Serial
+    public class DBCommand
     {
+        // Десериализация 
         public dynamic DeSerialization (byte[] bytes)
         {      
             MemoryStream stream = new MemoryStream();
             BinaryFormatter formatter = new BinaryFormatter();
             stream.Write(bytes, 0, bytes.Length);
             stream.Seek(1, SeekOrigin.Begin);
+            //определение типа принятого объекта // 0 - person,  1- Request 
             if (bytes[0] == 0)
                 return (Person)formatter.Deserialize(stream);
             else if (bytes[0] == 1)
@@ -28,7 +33,7 @@ namespace DataBase
             else return null;
         }
 
-
+        //Сериализация объекта для передачи
         public byte[] Serialization()
         {
             BinaryFormatter formatter = new BinaryFormatter();
@@ -46,14 +51,30 @@ namespace DataBase
             for (int i = 1; i <= tmp.Length; i++)
                 msg[i] = tmp[i - 1];
             return msg;
-
         }
+
+        //подключение к серверу для отпарвки/принятия запроса//сервер слушает всегда
+        public void AddRequest ()
+        {
+            
+        }
+        //вывод в консоле 
+        public bool ViewTable()
+        {
+            bool flag = false;
+
+            return flag;
+        }
+
+
+
+
     }
 
 
 
     [Serializable]
-    public class Person :Serial
+    public class Person :DBCommand
     {
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
@@ -68,7 +89,7 @@ namespace DataBase
     }
 
     [Serializable]
-    public class Request :Serial
+    public class Request :DBCommand
     {
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
@@ -92,8 +113,6 @@ namespace DataBase
             CreateTable<Person>();
             CreateTable<Request>();
         }
-
-
 
     }
 }

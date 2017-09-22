@@ -72,7 +72,7 @@ namespace srvr
                                 byte[] data =new byte [1024];
 
                     // Мы дождались клиента, пытающегося с нами соединиться
-                    var obj = new Serial();
+                    var obj = new DBCommand();
                     byte[] bytes = new byte[1024];
                     handler.Receive(bytes);
 
@@ -106,9 +106,9 @@ namespace srvr
                     ///        Console.WriteLine("Сервер завершил соединение с клиентом.");
                     ///       break;
                     ///    }
-
-                    handler.Shutdown(SocketShutdown.Both);
-                                handler.Close();
+//
+              //      handler.Shutdown(SocketShutdown.Both);
+              //                  handler.Close();
                             }
                         }
                         catch (Exception ex)
