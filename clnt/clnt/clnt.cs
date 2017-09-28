@@ -10,78 +10,98 @@ namespace SocketClient
 {
     class Clnt
     {
-        
+        public static bool Authorizat(Person person, NetworkStream stream)
+        {
+            bool flag = false;
+    
+            // преобразуем сообщение в массив байтов
+            byte[] data = person.Serialization();
+ 
+
+            data[0] = 0;
+            data[1] = 0;
+            // отправка сообщения
+            if (stream.CanWrite)
+                stream.Write(data, 0, data.Length);
+            else Console.WriteLine("Занято");
+            // получаем ответ
+            data = new byte[1024]; // буфер для получаемых данных
+            if (stream.CanRead)
+                do
+                {
+                    Console.WriteLine("Получение потока");
+                    stream.Read(data, 0, data.Length);
+                }
+                while (stream.DataAvailable);
+            else Console.WriteLine("Не может быть считан");
+            if (data[0] == 1)
+            {
+                Console.WriteLine("Удачно");
+                flag = true;
+            }
+            else Console.WriteLine("Неудача");
+            stream.Flush();
+            return flag;
+        }
+        public static void AddRequest(Person person, NetworkStream stream)
+        {
+            Console.WriteLine("Введите запрос");
+            string request = Console.ReadLine();
+
+            Request req = new Request(person, request);
+            byte[] data;
+            data=req.Serialization();
+            data[0] = 1;
+            if (stream.CanWrite)
+                stream.Write(data, 0, data.Length);
+            else Console.WriteLine("Занято");
+
+            stream.Flush();
+
+        }
+        const int port = 8888;
+        const string address = "127.0.0.1";
         static void Main(string[] args)
         {
+            //здесь будет вызов формы авторизации
+            Console.Write("Введите свое имя:");
+            string userName = Console.ReadLine();
+
+            Person person=new Person (userName, userName, 000);
+
+
+            TcpClient client = null;
             try
             {
-                SendMessageFromSocket(11000);
+                client = new TcpClient(address, port);
+                NetworkStream stream = client.GetStream();
+
+                while (true)
+                {
+                    //Авторизация
+                    while (Authorizat(person, stream) == false)
+                    {
+                        //здесь будет вызов формы авторизации
+                        Console.Write("Введите свое имя222:");
+                      
+                        person.FirstName = Console.ReadLine();
+                    }
+                    Console.WriteLine("WellDOne");
+                  
+                    AddRequest(person, stream);
+                 
+                
+                 
+                }
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                Console.WriteLine(ex.Message);
             }
             finally
             {
-                Console.ReadLine();
+                client.Close();
             }
-        }
-
-        static void SendMessageFromSocket(int port)
-        {
-
-            var tmp= new Person
-           {
-               FirstName = "123a",
-               LastName = "4124123i"
-           };
-
-            var tmp2 = new Request
-            {
-                PersonId = 2,
-                Time = DateTime.Today,
-                Req = "Vasyaaaa"
-            };
-
-            //сериализация объекта 
-            var bytes = tmp.Serialization();
-            var bytes2 = tmp2.Serialization();
-
-            // Соединяемся с удаленным устройством
-
-            // Устанавливаем удаленную точку для сокета
-            IPHostEntry ipHost = Dns.GetHostEntry("localhost");
-            IPAddress ipAddr = ipHost.AddressList[0];
-            IPEndPoint ipEndPoint = new IPEndPoint(ipAddr, port);
-
-            Socket sender = new Socket(ipAddr.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-
-            // Соединяем сокет с удаленной точкой
-            sender.Connect(ipEndPoint);
-
-            Console.Write("Введите сообщение: ");
-         //   string message = Console.ReadLine();
-
-            Console.WriteLine("Сокет соединяется с {0} ", sender.RemoteEndPoint.ToString());
-            byte[] msg = bytes;
-            byte[] msg2 = bytes2;
-            //Отправляем данные через сокет
-            int bytesSent = sender.Send(msg2);
-            bytesSent = sender.Send(msg2);
-
-
-            // Получаем ответ от сервера
-            //   int bytesRec = sender.Receive(bytes);
-
-            //    Console.WriteLine("\nОтвет от сервера: {0}\n\n", Encoding.UTF8.GetString(bytes, 0, bytesRec));
-
-            // Используем рекурсию для неоднократного вызова SendMessageFromSocket()
-            //   if (message.IndexOf("<TheEnd>") == -1)
-            //       SendMessageFromSocket(port);
-
-            // Освобождаем сокет
-            sender.Shutdown(SocketShutdown.Both);
-            sender.Close();
         }
     }
 }
