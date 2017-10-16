@@ -5,15 +5,16 @@ using System.Net.Sockets;
 using DataBase;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-
 namespace SocketClient
 {
     class Clnt
     {
-        public static void Connect(string userName)
-        {
-            //здесь будет вызов формы авторизации
+        const int port = 8888;
+        const string address = "127.0.0.1";
 
+
+      public static  void Connect(string userName)
+        {
             Person person = new Person(userName, userName, 000);
             TcpClient client = null;
             try
@@ -26,14 +27,8 @@ namespace SocketClient
                     //Авторизация
                     while (Authorizat(person, stream) == false)
                     {
-                        //здесь будет вызов формы авторизации
-                        Console.Write("Ошибка авторизации:");
-                        Console.Write("Введите свое имя:");
 
-                        person.FirstName = Console.ReadLine();
                     }
-                    Console.WriteLine("WellDOne");
-
 
                 }
             }
@@ -42,8 +37,9 @@ namespace SocketClient
                 Console.WriteLine(ex.Message);
             }
             finally
-            {  
-                 client.Close();
+            {
+          
+                client.Close();
             }
         }
         public static bool Authorizat(Person person, NetworkStream stream)
@@ -52,7 +48,7 @@ namespace SocketClient
             DataTravel travelPerson = new DataTravel(person, "Authorizat");
             // преобразуем сообщение в массив байтов
             byte[] data = travelPerson.Serialization();
-             // отправка сообщения
+            // отправка сообщения
             if (stream.CanWrite)
                 stream.Write(data, 0, data.Length);
             else Console.WriteLine("Занято");
@@ -83,17 +79,13 @@ namespace SocketClient
 
             DataTravel reqTravel = new DataTravel(new Request(person, request), "addRequest");
 
-            byte[] data= reqTravel.Serialization();
+            byte[] data = reqTravel.Serialization();
             if (stream.CanWrite)
                 stream.Write(data, 0, data.Length);
             else Console.WriteLine("Занято");
 
         }
-        const int port = 8888;
-        const string address = "127.0.0.1";
-        static void Main(string[] args)
-        {
-         //   Connect();
-        }
+
+        
     }
 }
