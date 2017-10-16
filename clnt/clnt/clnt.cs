@@ -10,42 +10,6 @@ namespace SocketClient
 {
     class Clnt
     {
-        public static void Connect(string userName)
-        {
-            //здесь будет вызов формы авторизации
-
-            Person person = new Person(userName, userName, 000);
-            TcpClient client = null;
-            try
-            {
-                client = new TcpClient(address, port);
-                NetworkStream stream = client.GetStream();
-
-                while (true)
-                {
-                    //Авторизация
-                    while (Authorizat(person, stream) == false)
-                    {
-                        //здесь будет вызов формы авторизации
-                        Console.Write("Ошибка авторизации:");
-                        Console.Write("Введите свое имя:");
-
-                        person.FirstName = Console.ReadLine();
-                    }
-                    Console.WriteLine("WellDOne");
-
-
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-            finally
-            {  
-                 client.Close();
-            }
-        }
         public static bool Authorizat(Person person, NetworkStream stream)
         {
             bool flag = false;
@@ -93,7 +57,50 @@ namespace SocketClient
         const string address = "127.0.0.1";
         static void Main(string[] args)
         {
-         //   Connect();
+            //здесь будет вызов формы авторизации
+            Console.Write("Введите свое имя:");
+            string userName = Console.ReadLine();
+
+            Person person=new Person (userName, userName, 000);
+
+
+            TcpClient client = null;
+            try
+            {
+                client = new TcpClient(address, port);
+                NetworkStream stream = client.GetStream();
+
+                while (true)
+                {
+                    //Авторизация
+                   while (Authorizat(person, stream) == false)
+                    {
+                        //здесь будет вызов формы авторизации
+                        Console.Write("Ошибка авторизации:");
+                        Console.Write("Введите свое имя:");
+                      
+                        person.FirstName = Console.ReadLine();
+                    }
+                    Console.WriteLine("WellDOne");
+                  
+                    AddRequest(person, stream);
+
+                    AddRequest(person, stream);
+
+                    AddRequest(person, stream);
+
+                    AddRequest(person, stream);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                Main(args);
+                // client.Close();
+            }
         }
     }
 }

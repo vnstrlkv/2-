@@ -29,7 +29,7 @@ namespace ClntWpfForm
 
         private void Connect_Click(object sender, RoutedEventArgs e)
         {
-            string userName = UserName.ToString();
+            string userName = UserNameTxt.ToString();
             Clnt.Connect(userName);
         }
 
