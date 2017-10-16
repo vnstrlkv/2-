@@ -9,5 +9,6 @@
     <Grid>
         <Button x:Name="ConnectBtn" Content="Connect" HorizontalAlignment="Left" Margin="217,144,0,0" VerticalAlignment="Top" Width="75"/>
         <TextBox x:Name="UserNameTxt" HorizontalAlignment="Left" Height="23" Margin="198,104,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120"/>
+        <TextBlock x:Name="AutorizatTextBlock" HorizontalAlignment="Left" Margin="217,190,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" Height="40" Width="107"/>
     </Grid>
 </Window>

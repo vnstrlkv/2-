@@ -9,41 +9,10 @@ namespace SocketClient
 {
     class Clnt
     {
-        const int port = 8888;
-        const string address = "127.0.0.1";
 
-
-      public static  void Connect(string userName)
+        public static bool Authorizat(string userName, NetworkStream stream)
         {
             Person person = new Person(userName, userName, 000);
-            TcpClient client = null;
-            try
-            {
-                client = new TcpClient(address, port);
-                NetworkStream stream = client.GetStream();
-
-                while (true)
-                {
-                    //Авторизация
-                    while (Authorizat(person, stream) == false)
-                    {
-
-                    }
-
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-            finally
-            {
-          
-                client.Close();
-            }
-        }
-        public static bool Authorizat(Person person, NetworkStream stream)
-        {
             bool flag = false;
             DataTravel travelPerson = new DataTravel(person, "Authorizat");
             // преобразуем сообщение в массив байтов
