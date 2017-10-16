@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "clnt", "..\clnt\clnt\clnt.c
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Request", "..\Request\Request\Request.csproj", "{AA720954-D523-4B7F-BA7F-E2A6F2655500}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClntWpfForm", "..\ClntWpfForm\ClntWpfForm.csproj", "{EE0A4DCD-2022-4CF9-A3AA-738574A1F672}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +31,10 @@ Global
 		{AA720954-D523-4B7F-BA7F-E2A6F2655500}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AA720954-D523-4B7F-BA7F-E2A6F2655500}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AA720954-D523-4B7F-BA7F-E2A6F2655500}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE0A4DCD-2022-4CF9-A3AA-738574A1F672}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE0A4DCD-2022-4CF9-A3AA-738574A1F672}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE0A4DCD-2022-4CF9-A3AA-738574A1F672}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE0A4DCD-2022-4CF9-A3AA-738574A1F672}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

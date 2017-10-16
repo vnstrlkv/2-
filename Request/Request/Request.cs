@@ -12,30 +12,61 @@ using SQLite;
 using System.Globalization;
 namespace DataBase
 {
-    //0 байт тип команды/ 1 байт подтип команды / 3 байт тип объекта
-
-
+    //0 байт тип команды/ 1 байт подтип команды / 2 байт тип объект
     [Serializable]
-    public class DBCommand 
+    public class DataTravel 
     {
-        public DBCommand(string firstName, string lastName, int phoneNumber) { }
-        public DBCommand(Person per, string str) { }
-        public DBCommand() { }
+        public Person travelPerson;
+        public Request travelRequest;
+        public Type typeTravelClass;
+        public string command;
 
-        // Десериализация 
-        public dynamic DeSerialization (byte[] bytes)
-        {      
-            MemoryStream stream = new MemoryStream();
-            BinaryFormatter formatter = new BinaryFormatter();
-            stream.Write(bytes, 0, bytes.Length);
-            stream.Seek(1, SeekOrigin.Begin);
-            //определение типа принятого объекта // 0 - person,  1- Request 
-            if (bytes[3] == 0)
-                return (Person)formatter.Deserialize(stream);
-            else if (bytes[3] == 1)
-                return (Request)formatter.Deserialize(stream);
-            else return null;
+        /* addRequest
+         * addPerson
+         * deletePerson
+         * deleteRequest
+         * 
+         */
+
+//Конструкторы
+       public DataTravel(Request travelClass)
+        {
+            typeTravelClass = typeof(Request);
+            travelRequest = travelClass;
+            travelPerson = null;
         }
+        public DataTravel(Person travelClass)
+        {
+            typeTravelClass = typeof(Person);
+            travelPerson = travelClass;
+            travelRequest = null;
+        }
+
+        public DataTravel(Person travelClass, string command)
+        {
+            this.travelPerson = travelClass;
+            travelRequest = null;
+            this.command = command;
+        }
+        public DataTravel(Request travelClass, string command)
+        {
+            this.travelRequest = travelClass;
+            travelPerson = null;
+            this.command = command;
+        }
+        public DataTravel(string command)
+        {
+            this.travelRequest = null;
+            travelPerson = null;
+            typeTravelClass = null;
+            this.command = command;
+        }
+
+        public DataTravel ()
+        {
+
+        }
+
 
         //Сериализация объекта для передачи
         public byte[] Serialization()
@@ -43,48 +74,25 @@ namespace DataBase
             BinaryFormatter formatter = new BinaryFormatter();
             MemoryStream stream = new MemoryStream();
             formatter.Serialize(stream, this);
-            byte[] tmp = stream.ToArray();
-            //добавление флага для определения типа переданного объекта
-            byte[] msg = new byte[tmp.Length + 3];
-            msg[0] = 9;
-            msg[1] = 9;
-            if (this is Person)
-                msg[2] = 0;
-            else if (this is Request)
-                msg[2] = 1;
-
-            for (int i = 3; i <= tmp.Length; i++)
-                msg[i] = tmp[i - 3];
-            return msg;
+            byte[] travelMsg = stream.ToArray();
+            return travelMsg;
         }
 
-
-        //создание полей
-
-
-        //Добавление полей в базуданных
-        public void AddRequestToDB (Database db, Request req)
+        // Десериализация 
+        public DataTravel DeSerialization(byte[] bytes)
         {
-            if (req!=null)
-            db.Insert(req);
+            MemoryStream stream = new MemoryStream();
+            BinaryFormatter formatter = new BinaryFormatter();
+            stream.Write(bytes, 0, bytes.Length);
+            stream.Seek(0, SeekOrigin.Begin);
+            return (DataTravel)formatter.Deserialize(stream);                 
         }
-        public void AddPersonToDB(Database db, Person per)
-        {
-            if (per != null)
-                db.Insert(per);
-        }
-        //вывод в консоле 
-
-
-
-
 
     }
 
-
-
+  
     [Serializable]
-    public class Person :DBCommand
+    public class Person
     {
 
         [PrimaryKey, AutoIncrement]
@@ -101,7 +109,7 @@ namespace DataBase
 
         public Person() { }
 
-        public Person( string firstName, string lastName, int phoneNumber) : base (firstName, lastName, phoneNumber)
+        public Person( string firstName, string lastName, int phoneNumber)
         {
             FirstName = firstName;
             LastName = LastName;
@@ -111,7 +119,7 @@ namespace DataBase
     }
 
     [Serializable]
-    public class Request :DBCommand
+    public class Request 
     {
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
@@ -123,12 +131,12 @@ namespace DataBase
 
         public override string ToString()
         {
-            return string.Format("{0:} {1:MMM dd yy}    {2:}", Id, Time, Req);
+            return string.Format("{0:} {1:} {2:MMM dd yy}    {3:}", Id, PersonId, Time, Req);
         }
 
 
         public Request() { }
-        public Request( Person per, string req) : base (per, req)
+        public Request( Person per, string req)
         {
             Time = DateTime.Today;
             PersonId = per.Id;
