@@ -5,12 +5,67 @@ using System.Net.Sockets;
 using DataBase;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 namespace SocketClient
 {
-    class Clnt
+    class Clnt 
     {
+        const int port = 8888;
+        const string address = "127.0.0.1";
+        bool connected;
+        public NetworkStream stream;
+        TcpClient client;
 
-        public static bool Authorizat(string userName, NetworkStream stream)
+        public  bool Connected
+        {
+            get { return connected; }
+            set {
+                if (connected != value)
+                {
+                    connected = value;
+                    if (Connected)
+                    {
+                        ConnectionTrue();
+                    }
+                    else
+                    {
+                        ConnectionFalse();
+                    }
+                }
+            }
+        }
+
+        public void Connect ()
+            {
+            try
+            {
+                if (!Connected)
+                {
+                    client = new TcpClient(address, port);
+                    stream = client.GetStream();
+                    Connected = true;
+
+                }
+            }
+            catch (Exception)
+            {
+         //       Connected = false;
+            }
+        }
+
+        public void Disconnect()
+        {
+            if (Connected)
+            {
+               
+                    stream.Close();//отключение потока                  
+                    client.Close();//отключение клиента       
+                    Connected = false;
+            }
+        }
+
+        public bool Authorizat(string userName)
         {
             Person person = new Person(userName, userName, 000);
             bool flag = false;
@@ -41,7 +96,7 @@ namespace SocketClient
 
             return flag;
         }
-        public static void AddRequest(Person person, NetworkStream stream)
+        public void AddRequest(Person person, NetworkStream stream)
         {
             Console.WriteLine("Введите запрос");
             string request = Console.ReadLine();
@@ -55,6 +110,15 @@ namespace SocketClient
 
         }
 
-        
+
+        //события
+        // Подключение к серверу
+        public delegate void ConnectionTrueHandler();
+        public event ConnectionTrueHandler ConnectionTrue;
+
+        public delegate void ConnectionFalseHandler();
+        public event ConnectionFalseHandler ConnectionFalse;
+
+
     }
 }

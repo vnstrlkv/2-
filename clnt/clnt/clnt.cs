@@ -17,19 +17,19 @@ namespace SocketClient
             // преобразуем сообщение в массив байтов
             byte[] data = travelPerson.Serialization();
              // отправка сообщения
-            if (stream.CanWrite)
+
                 stream.Write(data, 0, data.Length);
-            else Console.WriteLine("Занято");
+
             // получаем ответ
             data = new byte[1024]; // буфер для получаемых данных
-            if (stream.CanRead)
+ 
                 do
                 {
                     Console.WriteLine("Получение потока");
                     stream.Read(data, 0, data.Length);
                 }
                 while (stream.DataAvailable);
-            else Console.WriteLine("Не может быть считан");
+
             if (data[0] == 1)
             {
                 person.Id = data[1];
@@ -48,9 +48,9 @@ namespace SocketClient
             DataTravel reqTravel = new DataTravel(new Request(person, request), "addRequest");
 
             byte[] data= reqTravel.Serialization();
-            if (stream.CanWrite)
+
                 stream.Write(data, 0, data.Length);
-            else Console.WriteLine("Занято");
+
 
         }
         const int port = 8888;
@@ -84,13 +84,9 @@ namespace SocketClient
                     Console.WriteLine("WellDOne");
                   
                     AddRequest(person, stream);
-
-                    AddRequest(person, stream);
-
-                    AddRequest(person, stream);
-
-                    AddRequest(person, stream);
+    
                 }
+           
             }
             catch (Exception ex)
             {
@@ -98,8 +94,10 @@ namespace SocketClient
             }
             finally
             {
-                Main(args);
-                // client.Close();
+
+                if (client != null)
+                    client.Close();
+                
             }
         }
     }

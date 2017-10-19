@@ -16,34 +16,67 @@ using System.Windows.Shapes;
 using SocketClient;
 namespace ClntWpfForm
 {
+   
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
-        const int port = 8888;
-        const string address = "127.0.0.1";
-        NetworkStream stream;
+        Clnt client = new Clnt();
+      
+
         public MainWindow()
         {
-
+            
             InitializeComponent();
-            TcpClient client = null;
-            client = new TcpClient(address, port);
-            stream = client.GetStream();
-            ConnectBtn.Click += Connect_Click;
+
+
+            client.ConnectionTrue += ChangeConnectionButtonTrue;
+            client.ConnectionFalse += ChangeConnectionButtonFalse;
+
+        }
+        
+/*
+        private void ConnectionButton_Loaded(object sender, RoutedEventArgs e)
+        {
+            client.ConnectionTrue += ChangeConnectionButtonTrue;
+            client.ConnectionFalse += ChangeConnectionButtonFalse;
+        }
+   */
+        private void ChangeConnectionButtonTrue()
+        {
+            
+            ConnectionButton.Content = "Disconnect";
+            ConnectionButton.Click -= ConnectionButton_Click;
+            ConnectionButton.Click += ConnectionButton_Click_Disconnect;
+        }
+        private void ChangeConnectionButtonFalse()
+        {
+            ConnectionButton.Content = "Connect";
+            ConnectionButton.Click -= ConnectionButton_Click_Disconnect;
+            ConnectionButton.Click += ConnectionButton_Click;
         }
 
-        private void Connect_Click(object sender, RoutedEventArgs e)
+        private void ConnectionButton_Click(object sender, RoutedEventArgs e)
         {
-           string userName = UserNameTxt.Text;
-          bool flag= Clnt.Authorizat(userName, stream);
-            if (flag==false)
+            client.Connect();
+            if (client.Connected)
             {
-                AutorizatTextBlock.Text="NOT CONNECT";
+                AutorizatTextBlock.Text = "Успешное подключение";
             }
-            else AutorizatTextBlock.Text = "CONNECTED";
+            else AutorizatTextBlock.Text = "Сервер не доступен";
         }
+
+        private void ConnectionButton_Click_Disconnect(object sender, RoutedEventArgs e)
+        {
+            client.Disconnect();
+            if (!client.Connected)
+            {
+                AutorizatTextBlock.Text = "Отключен";
+            }
+            else AutorizatTextBlock.Text = "Сервер не доступен";
+        }
+
 
     }
 

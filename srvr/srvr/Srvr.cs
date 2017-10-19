@@ -19,6 +19,7 @@ namespace srvr
         public static bool OperationWithData(byte[] data, NetworkStream stream)
         {
             bool flag = false;
+
             DataTravel dataTravel = new DataTravel();
             dataTravel = dataTravel.DeSerialization(data);
             switch (dataTravel.command)
@@ -99,31 +100,44 @@ namespace srvr
             public TcpClient client;
             public ClientObject(TcpClient tcpClient)
             {
+                Console.WriteLine("Новое успешное подключение");
                 client = tcpClient;
             }
 
             public void Process()
             {
+        
                 NetworkStream stream = null;
                 try
                 {
+                   
                     stream = client.GetStream();
                     byte[] data = new byte[1024]; // буфер для получаемых данных
                     while (true)
                     {
                         // получаем сообщение
-                        StringBuilder builder = new StringBuilder();
-                        if (stream.CanRead)
+                        //      StringBuilder builder = new StringBuilder();
+                        int countbyte;
                             do
                             {
-                                Console.WriteLine("Получение потока");
-                                stream.Read(data, 0, data.Length);
+                               
+                             countbyte = stream.Read(data, 0, data.Length);
                             }
                             while (stream.DataAvailable);
-                        else Console.WriteLine("Не может быть считан");
-                       
-                        while (stream.DataAvailable);
-                        OperationWithData(data, stream);                     
+                        if (countbyte==0)
+                        {
+                            stream.Close();
+                            client.Close();
+                            Console.WriteLine("Отключение прошло успешно");
+                            break;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Получение потока");
+
+                            OperationWithData(data, stream);
+                        }
+                                    
                     }
                 }
                 catch (Exception ex)
