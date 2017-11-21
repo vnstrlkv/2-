@@ -12,17 +12,23 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-
-namespace ClntWpfForm
+using SocketClient;
+namespace ClntWpfForm.Pages
 {
     /// <summary>
-    /// Interaction logic for Page1.xaml
+    /// Interaction logic for RequestPage.xaml
     /// </summary>
-    public partial class Page1 : Page
+    public partial class RequestPage : Page
     {
-        public Page1()
+        private Client client = ClientView.client;
+        public RequestPage()
         {
             InitializeComponent();
+        }
+        private void AddRequestButton_Click(object sender, RoutedEventArgs e)
+        {
+            string request = RequestTextBox.Text;
+            client.AddRequest(request);
         }
     }
 }

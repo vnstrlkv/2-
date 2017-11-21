@@ -3,18 +3,25 @@ using System.Text;
 using System.Net;
 using System.Net.Sockets;
 using DataBase;
+
+using Xceed.Wpf.Toolkit;
+using Xceed.Wpf.DataGrid;
+
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 namespace SocketClient
 {
-    class Clnt 
+
+   public class Client 
     {
         const int port = 8888;
         const string address = "127.0.0.1";
-        bool connected;
+        bool connected = false;
         public NetworkStream stream;
+        public Person person = new Person();
+
         TcpClient client;
 
         public  bool Connected
@@ -27,9 +34,11 @@ namespace SocketClient
                     if (Connected)
                     {
                         ConnectionTrue();
+                        AutorizationChange();
                     }
                     else
                     {
+                        AutorizationChange();
                         ConnectionFalse();
                     }
                 }
@@ -65,9 +74,10 @@ namespace SocketClient
             }
         }
 
-        public bool Authorizat(string userName)
+        public bool Authorizat(string userName, string password)
         {
-            Person person = new Person(userName, userName, 000);
+            person.UserName = userName;
+            person.Password = password;
             bool flag = false;
             DataTravel travelPerson = new DataTravel(person, "Authorizat");
             // преобразуем сообщение в массив байтов
@@ -96,10 +106,14 @@ namespace SocketClient
 
             return flag;
         }
-        public void AddRequest(Person person, NetworkStream stream)
+        public bool Register()
         {
-            Console.WriteLine("Введите запрос");
-            string request = Console.ReadLine();
+
+            return false;
+        }
+
+        public void AddRequest(string request)
+        {
 
             DataTravel reqTravel = new DataTravel(new Request(person, request), "addRequest");
 
@@ -119,6 +133,16 @@ namespace SocketClient
         public delegate void ConnectionFalseHandler();
         public event ConnectionFalseHandler ConnectionFalse;
 
+        public delegate void ConnectionAutorizationHandler();
+        public event ConnectionAutorizationHandler AutorizationChange;
+
 
     }
+
+    public class ClientView
+    {
+        public static Client client = new Client();
+
+    }
+
 }

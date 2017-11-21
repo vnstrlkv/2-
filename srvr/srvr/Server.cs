@@ -7,13 +7,12 @@ using System.Threading;
 using DataBase;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-//byte [0]=0 - авторизация
-//byte [0]=1 - добавление request
-namespace srvr
+
+namespace server
 {
-    class Srvr
+    class Server
     {
-       static Database db=new Database("test.db");
+        static Database db = new Database("test.db");
 
 
         public static bool OperationWithData(byte[] data, NetworkStream stream)
@@ -34,9 +33,9 @@ namespace srvr
                         AddRequest(dataTravel, stream);
                         break;
                     }
-                case "addPerson":
+                case "resgister":
                     {
-
+                        Register(dataTravel, stream);
                         break;
                     }
                 case "deletePerson":
@@ -58,34 +57,31 @@ namespace srvr
         public static bool Authorizat(DataTravel dataTravel, NetworkStream stream)
         {
             bool flag = false;
-            
-            var persons = db.ExecuteScalar<String>("SELECT * FROM Person WHERE FirstName = ?",dataTravel.travelPerson.FirstName);
-            Console.WriteLine(persons);
-            byte[] data = new byte[2];
-            if (persons != null)
-            {
-                Console.WriteLine("ОТправка");
-                // отправляем обратно, что аторизация успешна
-              
-                data[0] = 1;
-                data[1] = Convert.ToByte(persons);
-                if (stream.CanWrite)
-                    stream.Write(data, 0, data.Length);
-                else Console.WriteLine("Занято");
+            var personID = db.ExecuteScalar<String>("SELECT * FROM Person WHERE UserName = ? AND Password = ?", dataTravel.travelPerson.UserName, dataTravel.travelPerson.Password);
+            Console.WriteLine("Per={0}", personID);
 
-                flag = true;
-            }
-            else
+            byte[] data = new byte[2];
+            data[0] = 0;
+            Console.WriteLine("Происходит Авторизация");
+            if (personID != null)
             {
-                data[0] = 0;
-                if (stream.CanWrite)
-                {
-                    Console.WriteLine("Отправка fail");
-                    stream.Write(data, 0, data.Length);
+
+                    // отправляем обратно, что аторизация успешна
+
+                    data[0] = 1;
+                    data[1] = Convert.ToByte(personID);
+                    flag = true;
                 }
-                else Console.WriteLine("Занято");
-             
+        
+        else 
+        {                Console.WriteLine("Невозможно Авторизоваться");}
+
+            if (stream.CanWrite)
+            {
+                stream.Write(data, 0, data.Length);
             }
+            else Console.WriteLine("Занято");
+
             return flag;
         }
         public static bool AddRequest(DataTravel dataTravel, NetworkStream stream)
@@ -94,6 +90,13 @@ namespace srvr
             db.ViewTable();
             return true;
         }
+        public static bool Register(DataTravel dataTravel, NetworkStream stream)
+        {
+            db.Insert(dataTravel.travelRequest);
+            db.ViewTable();
+            return true;
+        }
+
 
         public class ClientObject
         {
@@ -106,11 +109,11 @@ namespace srvr
 
             public void Process()
             {
-        
+
                 NetworkStream stream = null;
                 try
                 {
-                   
+
                     stream = client.GetStream();
                     byte[] data = new byte[1024]; // буфер для получаемых данных
                     while (true)
@@ -118,13 +121,13 @@ namespace srvr
                         // получаем сообщение
                         //      StringBuilder builder = new StringBuilder();
                         int countbyte;
-                            do
-                            {
-                               
-                             countbyte = stream.Read(data, 0, data.Length);
-                            }
-                            while (stream.DataAvailable);
-                        if (countbyte==0)
+                        do
+                        {
+
+                            countbyte = stream.Read(data, 0, data.Length);
+                        }
+                        while (stream.DataAvailable);
+                        if (countbyte == 0)
                         {
                             stream.Close();
                             client.Close();
@@ -137,7 +140,7 @@ namespace srvr
 
                             OperationWithData(data, stream);
                         }
-                                    
+
                     }
                 }
                 catch (Exception ex)
@@ -165,15 +168,18 @@ namespace srvr
         {
             db.Execute("DROP TABLE Person");
             db.Execute("DROP TABLE Request");
-            Person person = new Person("asd", "asd", 123);
-            Person person2 = new Person("555", "555", 123);
+            Person person = new Person("asd", "asd1", "asd", "asd", 123);
+            Person person2 = new Person("555", "5551", "555", "555", 123);
             db.CreateTable<Person>();
             db.CreateTable<Request>();
             db.Insert(person);
             db.Insert(person2);
+
             db.ViewTable();
 
-      
+
+
+
             try
             {
                 listener = new TcpListener(IPAddress.Parse("127.0.0.1"), port);
@@ -200,6 +206,6 @@ namespace srvr
                     listener.Stop();
             }
         }
-    
+
     }
 }

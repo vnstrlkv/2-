@@ -16,69 +16,26 @@ using System.Windows.Shapes;
 using SocketClient;
 namespace ClntWpfForm
 {
-   
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
-        Clnt client = new Clnt();
-      
+
 
         public MainWindow()
         {
-            
+
+
             InitializeComponent();
-
-
-            client.ConnectionTrue += ChangeConnectionButtonTrue;
-            client.ConnectionFalse += ChangeConnectionButtonFalse;
-
         }
-        
-/*
-        private void ConnectionButton_Loaded(object sender, RoutedEventArgs e)
+
+        public void LogIn()
         {
-            client.ConnectionTrue += ChangeConnectionButtonTrue;
-            client.ConnectionFalse += ChangeConnectionButtonFalse;
+            frame1.NavigationService.Navigate(new Uri("pack://Pages/Page1.xaml"));
         }
-   */
-        private void ChangeConnectionButtonTrue()
-        {
-            
-            ConnectionButton.Content = "Disconnect";
-            ConnectionButton.Click -= ConnectionButton_Click;
-            ConnectionButton.Click += ConnectionButton_Click_Disconnect;
-        }
-        private void ChangeConnectionButtonFalse()
-        {
-            ConnectionButton.Content = "Connect";
-            ConnectionButton.Click -= ConnectionButton_Click_Disconnect;
-            ConnectionButton.Click += ConnectionButton_Click;
-        }
-
-        private void ConnectionButton_Click(object sender, RoutedEventArgs e)
-        {
-            client.Connect();
-            if (client.Connected)
-            {
-                AutorizatTextBlock.Text = "Успешное подключение";
-            }
-            else AutorizatTextBlock.Text = "Сервер не доступен";
-        }
-
-        private void ConnectionButton_Click_Disconnect(object sender, RoutedEventArgs e)
-        {
-            client.Disconnect();
-            if (!client.Connected)
-            {
-                AutorizatTextBlock.Text = "Отключен";
-            }
-            else AutorizatTextBlock.Text = "Сервер не доступен";
-        }
-
-
     }
-
+    
 
 }

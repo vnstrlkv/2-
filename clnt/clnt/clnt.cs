@@ -61,7 +61,7 @@ namespace SocketClient
             Console.Write("Введите свое имя:");
             string userName = Console.ReadLine();
 
-            Person person=new Person (userName, userName, 000);
+            Person person=new Person (userName, userName, userName, userName, 000);
 
 
             TcpClient client = null;

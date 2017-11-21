@@ -97,6 +97,8 @@ namespace DataBase
 
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
+        public string UserName { get; set; }
+        public string Password { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public int PhoneNumber { get; set; }
@@ -109,10 +111,12 @@ namespace DataBase
 
         public Person() { }
 
-        public Person( string firstName, string lastName, int phoneNumber)
+        public Person( string userName, string password, string firstName, string lastName, int phoneNumber)
         {
+            UserName = userName;
+            Password = password;
             FirstName = firstName;
-            LastName = LastName;
+            LastName = lastName;
             PhoneNumber = phoneNumber;
         }
         

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Net.Sockets;
-
+using SocketClient;
 namespace ClntWpfForm
 {
 
